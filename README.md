@@ -1,52 +1,123 @@
-# SIGNAL v0.1.0
+# TACKBOARD v1.1.3
 
-SIGNAL is a local-first visual gesture and gaze automation workbench.
+**TACKBOARD — A Simple Visual Thinking Space**
 
-**Core abstraction:** CAMERA → LANDMARKS → OBSERVATIONS → EVENTS → RULES → ACTIONS.
+TACKBOARD is a calm, local-first virtual whiteboard for arranging freeform sticky notes, structured Kanban notes, stickers, text labels, frames, connectors, and freehand annotations.
 
-This v0.1.0 build implements a functional browser application with:
+## What changed in v1.1.3
 
-- camera start/stop and device selection
-- local video preview with hand/face landmark overlays
-- MediaPipe Tasks Vision integration for hand gestures and face landmarks
-- semantic enter/hold/exit gesture events
-- hand-motion history with swipe and depth-motion events
-- approximate webcam gaze, blink/double-blink/long-blink events, and 3×3 gaze zones
-- local gaze calibration samples
-- live observations and event stream
-- visual rule editor with confidence, hold, cooldown, enable/disable, and trace output
-- SIMULATE vs LIVE execution modes
-- internal actions plus opt-in webhook actions
-- Action Lab, Tool Builder, variables, Test Lab event injection, and developer API workspace
-- trajectory-based **Teach Gesture** workflow (no server-side training)
-- local autosave, Fresh Start, JSON import/export, tool export, dark/light mode, Easy/Advanced mode
+TACKBOARD now has two distinct mouse interaction tools at the top of the left toolbar:
 
-## Run
+- **Select — arrow icon (`V`)**: click objects to select them, left-drag empty board space to draw a multi-selection rectangle, and drag selected objects to move them.
+- **Pan — hand icon (`H`)**: left-click and drag anywhere on the board—including directly over notes, stickers, drawings, or connectors—to move the complete board view.
 
-Serve the folder from `localhost` or HTTPS; camera access is normally restricted to secure contexts.
+The two modes no longer compete for the same ordinary left-drag gesture. The active tool is visibly highlighted and exposed to assistive technology through its pressed state.
 
-Examples:
+Additional behavior:
+
+- `Space + drag` and middle-button drag still provide temporary panning from any tool.
+- The Select tool retains additive marquee selection with `Shift`, `Ctrl`, or `Cmd`.
+- Double-click creation and object editing are intentionally inactive while the Pan tool is selected, preventing accidental edits while navigating.
+- One-finger dragging with the Pan tool pans from any starting point on touch devices; two-finger pinch/pan remains available.
+- The visible version and offline cache were updated to v1.1.3.
+
+## Included from earlier releases
+
+- Sticker library with thumbs up/down, green check, **Red X**, red exclamation, yellow question, blue box, arrows, star, heart, idea, flag, plus, and minus.
+- Sticker placement, drag-and-drop, movement, resizing, replacement, grouping, layering, connectors, search, persistence, and export.
+- Higher-contrast text across light-colored sticky notes and structured Kanban notes.
+- Structured Kanban notes with expanded and compact views.
+- Local autosave, multiple boards, undo/redo, search, filters, JSON import/export, PNG export, and PDF/print output.
+
+## Run it
+
+TACKBOARD has no backend and no build step.
+
+### Simple local use
+
+Open `index.html` in a modern browser. Core board features and local persistence work directly from the file.
+
+### Recommended hosted or local-server use
+
+Serve the folder from any normal static web host. This also enables the included service worker for offline reopening after the first visit.
+
+For a local server:
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Then open `http://localhost:8080/`.
+Then open `http://localhost:8080`.
 
-## Vision dependency
+## Core workflow
 
-The application itself is one HTML file, but v0.1.0 loads Google MediaPipe Tasks Vision, WASM, and the gesture/face model assets from their public CDN/model endpoints at runtime. **Camera frames are not uploaded**; inference occurs in the browser after those assets load. Test Lab, rule editing, project storage, and event injection continue to work if those model assets cannot load.
+**CREATE → ARRANGE → CONNECT → REFINE → SAVE**
 
-For a fully offline deployment, download and vendor the MediaPipe Tasks Vision JS/WASM package and model files, then change `MP_JS`, `MP_WASM`, `GESTURE_MODEL`, and `FACE_MODEL` near the top of the module script in `index.html` to local paths.
+- Choose the **Select arrow** when selecting, marquee-selecting, moving, or resizing board objects.
+- Choose the **Pan hand** when left-dragging the board view.
+- Double-click empty board space in Select mode to create a blank sticky note.
+- Use the Sticky Note tool or `Shift + N` to choose Blank Note or Kanban.
+- Use the Sticker tool or `Shift + S` to open the sticker picker. Plain `S` activates the most recently used sticker.
+- Drag a note by its header; stickers and text labels can be dragged from anywhere inside their bounds while Select is active.
+- In Select mode, left-drag empty board space to marquee-select multiple objects. Hold `Shift`, `Ctrl`, or `Cmd` to add to the existing selection.
+- Drag one selected object to move the complete multi-object selection together.
+- In Pan mode, left-drag anywhere to move the viewport without moving or selecting objects.
+- Hold `Space` while dragging, or use the middle mouse button, to pan temporarily from any tool. Trackpad scrolling also pans; `Ctrl/Cmd + wheel` zooms at the pointer.
+- Select an object to reveal contextual actions, resize handles, and—where applicable—a connector handle.
+- Double-click a note or press `Enter` while selected to edit. Double-click a sticker or press `Enter` while it is selected to change it.
+- Use the board switcher to create, rename, duplicate, delete, and search boards.
+- Use Export for current-board JSON, selected-object JSON, complete backups, clean PNGs, and browser-generated PDF/print output.
 
-## Browser boundaries
+## Keyboard shortcuts
 
-A normal web page cannot synthesize arbitrary OS keyboard input, silently send SMS, or bypass cross-origin/network security policy. SIGNAL therefore uses explicit browser actions and configurable connectors. Webhook actions are simulated unless the application is placed in **LIVE** mode, and any remote endpoint must allow the browser request.
+- `V` — Select tool
+- `H` — Pan tool
+- `N` — Create default sticky note
+- `Shift + N` — Open note-template picker
+- `S` — Activate the last-used sticker
+- `Shift + S` — Open sticker picker
+- `T`, `P`, `C`, `F` — Text, Pen, Connector, Frame
+- `Space + drag` — Temporarily pan from any tool
+- `Ctrl/Cmd + Z` — Undo
+- `Ctrl/Cmd + Shift + Z` — Redo
+- `Ctrl/Cmd + C`, `Ctrl/Cmd + V` — Copy and paste
+- `Ctrl/Cmd + D` — Duplicate selection
+- `Ctrl/Cmd + F` — Search
+- `Ctrl/Cmd + S` — Force local save
+- `0`, `1` — Reset view and fit content
+- `Delete` or `Backspace` — Delete selection
 
-## Safety
+## Kanban template
 
-SIGNAL is a prototyping environment. Ordinary webcam gesture recognition must not be used as the only safety control for hazardous or safety-critical machinery. Use independent engineered safety systems for consequential physical control.
+The Kanban structured note includes:
 
-## User scripts in v0.1.0
+1. Ticket #
+2. Ticket Type: Story, Bug, Subtask
+3. Sprint #
+4. Epic
+5. Description
+6. Team: SPA, PIC, PPD, CPPD, FES, R&A, P&BA, CMDSPT, HCM, SEC, EEO
+7. Reporter
+8. Assignee
+9. Status: Backlog, VP Scheduled, VP Held, Ready, In Dev, UAT, Done
+10. Needs VP?
+11. Need By Date
 
-The Developer script editor exposes a small documented `signal` API, but v0.1.0 does **not** yet provide a hardened security sandbox for arbitrary JavaScript. Only run scripts you trust. A sandboxed worker/iframe execution host is a planned hardening step.
+Kanban notes support expanded and compact views, field-aware search and filters, clean exports, conversion to blank notes, duplication, color changes, connectors, and local autosave.
+
+## Data and privacy
+
+- Data is stored locally in IndexedDB, with a localStorage fallback.
+- No account, server, telemetry, analytics, ads, or third-party tracking is included.
+- Use **Complete Backup JSON** regularly for portable backups.
+- Imported JSON is validated before it changes the workspace.
+
+## Files
+
+- `index.html` — self-contained application with embedded CSS and JavaScript
+- `sw.js` — small offline app-shell cache for static hosting
+- `README.md` — usage and deployment notes
+
+## Browser notes
+
+TACKBOARD targets current versions of Chrome, Edge, Firefox, and Safari. PDF export opens a clean print view; choose **Save as PDF** in the browser print destination. For large boards, use **Entire Board — Tiled Pages** to preserve readability.
